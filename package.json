@@ -1,9 +1,11 @@
 {
-  "name": "create-zvelge",
+  "name": "create-laravelte",
   "version": "0.1.0",
   "description": "Create a new Laravel + Svelte/SvelteKit project",
   "type": "module",
-  "bin": "./index.js",
+  "bin": {
+    "create-laravelte": "index.js"
+  },
   "files": ["index.js"],
   "keywords": ["create", "svelte", "sveltekit", "laravel", "starter", "scaffold"],
   "license": "MIT",
