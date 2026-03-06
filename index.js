@@ -44,26 +44,47 @@ try {
   process.exit(1);
 }
 
-// 4. Download template
-console.log(`\nScaffolding project in ${targetDir}...\n`);
-await downloadTemplate(REPO, { dir: targetDir });
+try {
+  // 4. Download template
+  console.log(`\nScaffolding project in ${targetDir}...\n`);
+  await downloadTemplate(REPO, { dir: targetDir });
 
-// 5. Run composer install
-console.log('Installing PHP dependencies...\n');
-execSync('composer install', { cwd: targetDir, stdio: 'inherit' });
+  // 5. Run composer install
+  console.log('Installing PHP dependencies...\n');
+  execSync('composer install', { cwd: targetDir, stdio: 'inherit' });
 
-// 6. Copy .env
-const envExample = path.join(targetDir, '.env.example');
-const envFile = path.join(targetDir, '.env');
-if (fs.existsSync(envExample) && !fs.existsSync(envFile)) {
-  fs.copyFileSync(envExample, envFile);
+  // 6. Copy .env
+  const envExample = path.join(targetDir, '.env.example');
+  const envFile = path.join(targetDir, '.env');
+  if (fs.existsSync(envExample) && !fs.existsSync(envFile)) {
+    fs.copyFileSync(envExample, envFile);
+  }
+
+  // 7. Run setup wizard
+  console.log('\nStarting setup wizard...\n');
+  execSync('php artisan app:setup', { cwd: targetDir, stdio: 'inherit' });
+
+  // 8. Initialize git repo
+  try {
+    execSync('git init', { cwd: targetDir, stdio: 'ignore' });
+    execSync('git add -A', { cwd: targetDir, stdio: 'ignore' });
+    execSync('git commit -m "Initial commit"', { cwd: targetDir, stdio: 'ignore' });
+  } catch {
+    // git not available — skip silently
+  }
+
+  // 9. Done
+  console.log(`\nDone! Your project is ready.\n`);
+  console.log(`  cd ${projectName}`);
+  console.log(`  composer dev\n`);
+} catch (err) {
+  console.error(`\nSetup failed: ${err.message}\n`);
+
+  // Clean up partial project directory
+  if (fs.existsSync(targetDir)) {
+    fs.rmSync(targetDir, { recursive: true, force: true });
+    console.error(`Cleaned up ${targetDir}`);
+  }
+
+  process.exit(1);
 }
-
-// 7. Run setup wizard
-console.log('\nStarting setup wizard...\n');
-execSync('php artisan app:setup', { cwd: targetDir, stdio: 'inherit' });
-
-// 8. Done
-console.log(`\nDone! Your project is ready.\n`);
-console.log(`  cd ${projectName}`);
-console.log(`  composer dev\n`);
