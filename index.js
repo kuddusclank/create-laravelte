@@ -452,10 +452,12 @@ async function main() {
     if (!runInstall) {
       console.log(`  2. Run: ${pc.cyan('composer install')}`);
       console.log(`  3. Run: ${pc.cyan('php artisan app:setup')}`);
+      console.log(`  4. Run: ${pc.cyan('composer dev')}`);
+    } else {
+      console.log(`  2. Run: ${pc.cyan('composer dev')}`);
     }
-    console.log(`  4. Run: ${pc.cyan('composer dev')}`);
     console.log();
-    clack.log.info(pc.dim('Tip: If you chose SvelteKit, open the frontend at http://localhost:5173 (Laravel runs at port 8000).'));
+    clack.log.info(pc.dim('Tip: If using SvelteKit, open the frontend port printed under [sveltekit] in your console (typically http://localhost:5173 or 5174). Laravel on port 8000 serves strictly as the API.'));
     console.log();
     
   } catch (err) {

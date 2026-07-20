@@ -1,6 +1,6 @@
 {
   "name": "create-laravelte",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "description": "Create a new Laravel + SvelteKit project with auth, SSO, and 2FA",
   "type": "module",
   "bin": {
