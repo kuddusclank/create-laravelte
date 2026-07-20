@@ -15,39 +15,39 @@ const REPO = 'gh:kuddusclank/laravel-svelte-starter';
 const AGENT_TEMPLATES = {
   cursor: {
     files: {
-      '.cursorrules': `# Global Cursor Rules\n\nProject Tech Stack: Laravel 12, Svelte 5 (with Runes), Inertia.js, SQLite, Pest PHP.\n`,
+      '.cursorrules': `# Global Cursor Rules\n\nProject Tech Stack: Laravel 12, Svelte 5 (with Runes), SvelteKit, SQLite, Pest PHP, Shadcn-Svelte.\n`,
       '.cursor/rules/laravel.mdc': `---\ndescription: Enforce Laravel 11/12 coding standards, pest testing, and architecture.\nglobs: ["app/**/*.php", "routes/**/*.php", "config/**/*.php", "tests/**/*.php"]\nalwaysApply: false\n---\n\n# Laravel Guidelines\n- Prefer using \`php artisan\` commands to generate code structure.\n- Always use type-hinting for class properties, arguments, and return values.\n- Never use \`env()\` outside configuration files; use \`config('key')\` instead.\n- Use \`match\` expressions instead of \`switch\` statements where applicable.\n- Write tests using Pest PHP.\n`,
-      '.cursor/rules/svelte.mdc': `---\ndescription: Enforce Svelte 5 runes, Skeleton UI, and TypeScript styles.\nglobs: ["resources/js/**/*.svelte", "resources/js/**/*.ts", "resources/js/**/*.js"]\nalwaysApply: false\n---\n\n# Svelte 5 / Frontend Guidelines\n- Always use Svelte 5 runes (\`$state\`, \`$derived\`, \`$props\`, \`$effect\`) instead of Svelte 4 reactive stores.\n- Use TypeScript for all component scripts (\`<script lang="ts">\`).\n- Rely on Tailwind CSS v4 and Skeleton UI components for layouts.\n- Avoid raw style tags; prefer utility classes.\n`
+      '.cursor/rules/svelte.mdc': `---\ndescription: Enforce Svelte 5 runes, Shadcn-Svelte, and TypeScript styles.\nglobs: ["src/**/*.svelte", "src/**/*.ts", "src/**/*.js"]\nalwaysApply: false\n---\n\n# Svelte 5 / Frontend Guidelines\n- Always use Svelte 5 runes (\`$state\`, \`$derived\`, \`$props\`, \`$effect\`) instead of Svelte 4 reactive stores.\n- Use TypeScript for all component scripts (\`<script lang="ts">\`).\n- Rely on Tailwind CSS v4 and Shadcn-Svelte components for layouts.\n- Leverage the cn() utility function from $lib/utils/utils.ts for concatenating CSS class names.\n- Avoid raw style tags; prefer utility classes.\n`
     }
   },
   windsurf: {
     files: {
-      '.windsurfrules': `# Windsurf Agent Rules\nYou are an expert full-stack developer working on a Laravel 12 + Svelte 5 project.\n\n## Tech Stack & Conventions\n- **Backend:** Laravel 12, Fortify, SQLite, Pest PHP.\n- **Frontend:** Svelte 5 (using runes), Inertia.js (v2), Tailwind CSS v4.\n\n## Core Directives\n1. Always keep the backend and frontend decoupled; rely on Inertia.js for data mapping.\n2. Prioritize security: do not bypass CSRF checks, and make sure Fortify rules are followed.\n3. If database migrations are edited, tell the user to run \`php artisan migrate\`.\n`
+      '.windsurfrules': `# Windsurf Agent Rules\nYou are an expert full-stack developer working on a Laravel 12 + Svelte 5 project.\n\n## Tech Stack & Conventions\n- **Backend:** Laravel 12, Fortify, SQLite, Pest PHP.\n- **Frontend:** Svelte 5 (using runes), SvelteKit, Tailwind CSS v4, Shadcn-Svelte.\n\n## Core Directives\n1. Always keep the backend and frontend decoupled; rely on REST/Inertia where applicable.\n2. Prioritize security: do not bypass CSRF checks, and make sure Fortify rules are followed.\n3. Leverage the cn() helper ($lib/utils/utils) to resolve conditional class mergers.\n4. If database migrations are edited, tell the user to run \`php artisan migrate\`.\n`
     }
   },
   copilot: {
     files: {
-      '.github/copilot-instructions.md': `# GitHub Copilot System Instructions\n\n## Project Context\n- **Name:** Laravel Svelte Starter App\n- **Architecture:** Monolith using Inertia.js to bridge PHP controllers and Svelte views.\n\n## Coding Style\n- Follow PSR-12 formatting rules for PHP files.\n- Follow ESLint / Prettier formats for Svelte and TypeScript files.\n- Avoid installing extra JS libraries unless Tailwind CSS or Skeleton UI can't provide the styling.\n`
+      '.github/copilot-instructions.md': `# GitHub Copilot System Instructions\n\n## Project Context\n- **Name:** Laravel Svelte Starter App\n- **Architecture:** Monolith API backend + SvelteKit frontend.\n\n## Coding Style\n- Follow PSR-12 formatting rules for PHP files.\n- Follow ESLint / Prettier formats for Svelte and TypeScript files.\n- Use Tailwind CSS v4, Lucide Svelte, or pre-scaffolded Shadcn-Svelte UI components.\n- Class names must be merged using the cn(...) helper from $lib/utils/utils.\n`
     }
   },
   claude: {
     files: {
-      '.clauderules': `# Claude Code Instructions\nYou are operating inside a Laravel 12 + Svelte 5 full-stack application.\n\n## Coding Conventions\n- Prefer Pest PHP for back-end tests.\n- Always use strongly-typed properties, arguments, and return types in PHP.\n- For Svelte components, implement script tag lang="ts" and utilize Svelte 5 runes (\`$state\`, \`$props\`).\n\n## Approved Command Guidelines\n- Safe to execute: \`php artisan route:list\`, \`php artisan test\`, \`npm run build\`, \`npm run dev\`\n`
+      '.clauderules': `# Claude Code Instructions\nYou are operating inside a Laravel 12 + Svelte 5 full-stack application with Shadcn-Svelte.\n\n## Coding Conventions\n- Prefer Pest PHP for back-end tests.\n- Always use strongly-typed properties, arguments, and return types in PHP.\n- For Svelte components, implement script tag lang="ts" and utilize Svelte 5 runes (\`$state\`, \`$props\`).\n- Leverage the cn() class-merging helper ($lib/utils/utils) to build responsive layouts.\n\n## Approved Command Guidelines\n- Safe to execute: \`php artisan route:list\`, \`php artisan test\`, \`npm run build\`, \`npm run dev\`\n`
     }
   },
   kimi: {
     files: {
-      '.kimirules': `# Kimi Rules & Directives\n- **Technical Stack:** Laravel backend + Svelte 5 frontend with Inertia.js bridge.\n- **Frontend Guidelines:** Use Tailwind CSS v4 and Skeleton UI.\n- **Backend Guidelines:** Standard Laravel MVC pattern. Avoid complex repository patterns unless strictly necessary.\n`
+      '.kimirules': `# Kimi Rules & Directives\n- **Technical Stack:** Laravel backend + Svelte 5/SvelteKit frontend.\n- **Frontend Guidelines:** Use Tailwind CSS v4 and Shadcn-Svelte components.\n- **Utilities:** Use cn() from $lib/utils/utils to merge conditional Tailwind classes.\n- **Backend Guidelines:** Standard Laravel MVC pattern. Avoid complex repository patterns unless strictly necessary.\n`
     }
   },
   gemini: {
     files: {
-      '.agents/AGENTS.md': `# Gemini & Antigravity Coding Constraints\n- Always use standard Laravel conventions (PSR-12).\n- Svelte components must use Svelte 5 runes.\n- Write explanatory commit messages describing non-obvious code paths.\n`
+      '.agents/AGENTS.md': `# Gemini & Antigravity Coding Constraints\n- Always use standard Laravel conventions (PSR-12).\n- Svelte components must use Svelte 5 runes.\n- Standard UI components are scaffolded under $lib/components/ui/.\n- Class names must be merged using the cn(...) helper from $lib/utils/utils.\n- Write explanatory commit messages describing non-obvious code paths.\n`
     }
   },
   llmstxt: {
     files: {
-      'llms.txt': `# Laravel Svelte Starter\n\n> A premium Laravel 12 and Svelte 5 boilerplate with built-in Fortify Auth, SSO, and 2FA.\n\n## Folders & Architecture\n- [app/](file:///app): Core Laravel backend code (Controllers, Models, Middleware).\n- [resources/js/](file:///resources/js): Svelte 5 frontend source files.\n- [routes/](file:///routes): Web, Auth, and Console routing definitions.\n\n## Key APIs\n- [Auth Flow](/docs/auth.md): Authentication presets (Fortify + SSO callback).\n- [SSO Setup](/docs/sso.md): How to setup GitHub, Google, Facebook, Apple, and X keys.\n`
+      'llms.txt': `# Laravel Svelte Starter\n\n> A premium Laravel 12 and Svelte 5 boilerplate with built-in Fortify Auth, SSO, 2FA, and Shadcn-Svelte.\n\n## Folders & Architecture\n- [app/](file:///app): Core Laravel backend code (Controllers, Models, Middleware).\n- [src/lib/components/ui/](file:///src/lib/components/ui): Pre-scaffolded Shadcn UI elements (Button, Card).\n- [src/routes/](file:///src/routes): SvelteKit frontend routes and views.\n\n## Key APIs\n- [Auth Flow](/docs/auth.md): Authentication presets (Fortify + SSO callback).\n- [SSO Setup](/docs/sso.md): How to setup GitHub, Google, Facebook, Apple, and X keys.\n`
     }
   }
 };
