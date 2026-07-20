@@ -1,13 +1,26 @@
 {
   "name": "create-laravelte",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "description": "Create a new Laravel + SvelteKit project with auth, SSO, and 2FA",
   "type": "module",
   "bin": {
     "create-laravelte": "index.js"
   },
-  "files": ["index.js", "README.md"],
-  "keywords": ["create", "svelte", "sveltekit", "laravel", "starter", "scaffold", "auth", "sso", "2fa"],
+  "files": [
+    "index.js",
+    "README.md"
+  ],
+  "keywords": [
+    "create",
+    "svelte",
+    "sveltekit",
+    "laravel",
+    "starter",
+    "scaffold",
+    "auth",
+    "sso",
+    "2fa"
+  ],
   "author": "Akanbi Abdulquddus",
   "license": "MIT",
   "repository": {
@@ -19,6 +32,8 @@
   },
   "homepage": "https://github.com/kuddusclank/laravel-svelte-starter#readme",
   "dependencies": {
-    "giget": "^2.0.0"
+    "@clack/prompts": "1.7.0",
+    "giget": "^2.0.0",
+    "picocolors": "1.1.1"
   }
 }
