@@ -66,37 +66,43 @@ function checkCommand(command, versionArgs = '--version') {
   }
 }
 
-// Custom function to verify environment version requirements
-function verifyPrerequisites() {
-  // 1. Node.js version check
+// Inspect the environment without throwing. Node is the only hard requirement
+// for the CLI itself; PHP and Composer are only needed for the optional
+// install + setup-wizard step, so we report their status and let the caller
+// decide how to proceed (scaffold now, install later).
+function checkEnvironment() {
   const nodeVersion = process.versions.node;
   const majorNode = parseInt(nodeVersion.split('.')[0], 10);
-  if (isNaN(majorNode) || majorNode < 18) {
-    throw new Error(`Node.js version 18+ is required. You are running v${nodeVersion}.`);
-  }
+  const nodeOk = !isNaN(majorNode) && majorNode >= 18;
 
-  // 2. PHP presence and version check
+  // PHP presence and version (8.2+ required for Laravel 12)
   const phpCheck = checkCommand('php', '-r "echo PHP_VERSION;"');
-  if (!phpCheck.available) {
-    throw new Error('PHP is required but not found in your system PATH. Please install PHP 8.2+ first.');
-  }
-  const phpVersion = phpCheck.output.trim();
-  const parts = phpVersion.split('.');
-  const majorPhp = parseInt(parts[0], 10);
-  const minorPhp = parseInt(parts[1], 10);
-  if (isNaN(majorPhp) || isNaN(minorPhp)) {
-    clack.log.warn(`Could not parse PHP version string: "${phpVersion}". Proceeding with caution.`);
-  } else if (majorPhp < 8 || (majorPhp === 8 && minorPhp < 2)) {
-    throw new Error(`PHP version 8.2+ is required. You are running v${phpVersion}.`);
+  const php = { available: phpCheck.available, version: null, ok: false };
+  if (phpCheck.available) {
+    php.version = phpCheck.output.trim();
+    const major = parseInt(php.version.split('.')[0], 10);
+    const minor = parseInt(php.version.split('.')[1], 10);
+    php.ok = !isNaN(major) && (major > 8 || (major === 8 && minor >= 2));
   }
 
-  // 3. Composer presence check
-  const composerCheck = checkCommand('composer', '--version');
-  if (!composerCheck.available) {
-    throw new Error('Composer is required but not found in your system PATH. Please install Composer first.');
-  }
+  const composer = { available: checkCommand('composer', '--version').available };
 
-  return { phpVersion, nodeVersion };
+  return { nodeVersion, nodeOk, php, composer };
+}
+
+// OS-aware guidance for installing PHP 8.2+ and Composer.
+function installHints() {
+  const lines = ['To install PHP 8.2+ and Composer, then re-run this command:'];
+  if (process.platform === 'darwin') {
+    lines.push('  macOS:  /bin/bash -c "$(curl -fsSL https://php.new/install/mac)"');
+  } else if (process.platform === 'win32') {
+    lines.push('  Windows (PowerShell): see https://php.new');
+  } else {
+    lines.push('  Linux:  /bin/bash -c "$(curl -fsSL https://php.new/install/linux)"');
+  }
+  lines.push('  Or use Laravel Herd: https://herd.laravel.com');
+  lines.push('  Composer docs: https://getcomposer.org/download/');
+  return lines;
 }
 
 // Function to run spawn as a Promise, capturing or passing stdio
@@ -260,7 +266,7 @@ async function main() {
 
   // Parse negative flag parameters
   const useGit = values.git !== false && !values['no-git'];
-  const runInstall = values.install !== false && !values['no-install'];
+  let runInstall = values.install !== false && !values['no-install'];
 
   // 4. Directory collision checks
   if (fs.existsSync(targetDir)) {
@@ -297,14 +303,32 @@ async function main() {
   // 5. Environmental checks
   const prereqSpinner = clack.spinner();
   prereqSpinner.start('Checking environment prerequisites...');
-  let versions;
-  try {
-    versions = verifyPrerequisites();
-    prereqSpinner.stop(pc.green(`Environment OK (PHP v${versions.phpVersion}, Node v${versions.nodeVersion})`));
-  } catch (err) {
+  const env = checkEnvironment();
+
+  // Node is the only hard requirement — the CLI itself runs on it.
+  if (!env.nodeOk) {
     prereqSpinner.stop(pc.red('Prerequisite check failed.'));
-    clack.log.error(pc.red(err.message));
+    clack.log.error(pc.red(`Node.js 18+ is required. You are running v${env.nodeVersion}.`));
     process.exit(1);
+  }
+
+  // PHP + Composer are only needed to install dependencies and run the setup
+  // wizard. If they're missing/outdated we still scaffold the project and skip
+  // that optional step, so the user isn't left empty-handed.
+  const missing = [];
+  if (!env.php.available) missing.push('PHP 8.2+ (not found in PATH)');
+  else if (!env.php.ok) missing.push(`PHP 8.2+ (found v${env.php.version})`);
+  if (!env.composer.available) missing.push('Composer (not found in PATH)');
+
+  if (missing.length === 0) {
+    prereqSpinner.stop(pc.green(`Environment OK (PHP v${env.php.version}, Node v${env.nodeVersion})`));
+  } else {
+    prereqSpinner.stop(pc.yellow('Some prerequisites are missing — the project will still be scaffolded.'));
+    if (runInstall) {
+      clack.log.warn(`Skipping dependency install & setup wizard. Missing:\n  - ${missing.join('\n  - ')}`);
+      for (const line of installHints()) clack.log.message(pc.dim(line));
+      runInstall = false;
+    }
   }
 
   let downloadCompleted = false;
@@ -385,7 +409,9 @@ async function main() {
       console.log();
       await runProcess('php', ['artisan', 'app:setup'], { cwd: targetDir });
       console.log();
-    } else {
+    } else if (missing.length === 0) {
+      // Only announce the flag-based skip here; a missing-prereq skip was
+      // already reported (with install hints) during the environment check.
       clack.log.warn('Skipping dependency installation and setup wizard (--no-install flagged).');
     }
 
@@ -448,6 +474,9 @@ async function main() {
     clack.outro(pc.green(pc.bold('Project setup complete! ✨')));
     
     console.log(pc.bold('Next steps to get started:'));
+    if (missing.length > 0) {
+      console.log(pc.yellow('  ⚠ Install PHP 8.2+ and Composer first (see hints above).'));
+    }
     console.log(`  1. Run: ${pc.cyan(`cd ${projectName}`)}`);
     if (!runInstall) {
       console.log(`  2. Run: ${pc.cyan('composer install')}`);
